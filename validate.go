@@ -13,7 +13,8 @@ var (
 	startsWithSpaces   = regexp.MustCompile(`^\s+`)
 	fourSpacesIndented = regexp.MustCompile(`^( {4})*[^\s]+`)
 	endsWithSpaces     = regexp.MustCompile(`\s+$`)
-	openingParenthese  = regexp.MustCompile(`[_|\(| ]\(`)
+	openingParenthese  = regexp.MustCompile(`[^(_|\(| )]\(`)
+	equalWithSpaces    = regexp.MustCompile(`[^( |!|<|>|=)]=|=[^(=| |>)]`)
 )
 
 func validateFile(filename string) {
@@ -55,8 +56,12 @@ func validateLine(line string) []string {
 		warnings = append(warnings, "Not indented using 4 spaces")
 	}
 
-	if strings.Contains(line, "(") && !openingParenthese.MatchString(line) {
-		warnings = append(warnings, "Opening parenthese not preceded by a whitespace")
+	if openingParenthese.MatchString(line) {
+		warnings = append(warnings, "Opening parenthese not preceeded by a whitespace")
+	}
+
+	if equalWithSpaces.MatchString(line) {
+		warnings = append(warnings, "Equals sign not surrounded by whitespaces")
 	}
 
 	return warnings
