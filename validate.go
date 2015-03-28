@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -31,26 +30,29 @@ func validateFile(filename string) {
 		line := scanner.Text()
 		num++
 
-		err := validateLine(line)
+		warnings := validateLine(line)
 
-		if err != nil {
-			fmt.Printf("%s:%d\t%s\n", filename, num, err.Error())
+		if len(warnings) > 0 {
+			for _, warning := range warnings {
+				fmt.Printf("%s:%d\t%s\n", filename, num, warning)
+			}
 		}
 	}
 }
 
-func validateLine(line string) error {
-	if startsWithSpaces.MatchString(line) && !fourSpacesIndented.MatchString(line) {
-		return errors.New("Not indented using 4 spaces")
+func validateLine(line string) []string {
+	var warnings []string
+	if strings.Trim(line, " ") == "{" {
+		warnings = append(warnings, "First parenthese isn't on the end of the first line")
 	}
 
 	if endsWithSpaces.MatchString(line) {
-		return errors.New("Trailing whitespaces at the end of the line")
+		warnings = append(warnings, "Trailing whitespaces at the end of the line")
 	}
 
-	if strings.Trim(line, " ") == "{" {
-		return errors.New("First parenthese isn't on the end of the first line")
+	if startsWithSpaces.MatchString(line) && !fourSpacesIndented.MatchString(line) {
+		warnings = append(warnings, "Not indented using 4 spaces")
 	}
 
-	return nil
+	return warnings
 }
