@@ -6,7 +6,6 @@ import (
 	"log"
 	"os"
 	"regexp"
-	"strings"
 )
 
 type styleWarning struct {
@@ -15,11 +14,12 @@ type styleWarning struct {
 }
 
 var (
+	singleBrace        = regexp.MustCompile(`^\s*\{\s*$`)
+	endsWithSpaces     = regexp.MustCompile(`\s+$`)
 	startsWithSpaces   = regexp.MustCompile(`^\s+`)
 	fourSpacesIndented = regexp.MustCompile(`^( {4})*[^\s]+`)
-	endsWithSpaces     = regexp.MustCompile(`\s+$`)
-	openingParenthese  = regexp.MustCompile(`[^(_|\(| )]\(`)
-	equalWithSpaces    = regexp.MustCompile(`[^( |!|<|>|=)]=|=[^(=| |>)]`)
+	openingParenthese  = regexp.MustCompile(`[^_|\(| ]\(`)
+	equalWithSpaces    = regexp.MustCompile(`[^ |!|<|>|=]=|=[^=| |>]`)
 
 	warningMessages = map[int]string{
 		1: "First brace isn't on the end of the first line",
@@ -57,7 +57,7 @@ func validateFile(filename string) {
 
 func validateLine(line string) []int {
 	var warnings []int
-	if strings.Trim(line, " ") == "{" {
+	if singleBrace.MatchString(line) {
 		warnings = append(warnings, 1)
 	}
 
