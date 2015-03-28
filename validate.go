@@ -11,9 +11,9 @@ import (
 
 var (
 	startsWithSpaces   = regexp.MustCompile(`^\s+`)
-	fourSpacesIndented = regexp.MustCompile(`^([ ]{4}).[^\s]+`)
+	fourSpacesIndented = regexp.MustCompile(`^( {4})*[^\s]+`)
 	endsWithSpaces     = regexp.MustCompile(`\s+$`)
-	openingParenthese  = regexp.MustCompile(`[\(| ]\(`)
+	openingParenthese  = regexp.MustCompile(`[_|\(| ]\(`)
 )
 
 func validateFile(filename string) {
