@@ -20,6 +20,8 @@ var (
 	fourSpacesIndented = regexp.MustCompile(`^( {4})*[^\s]+`)
 	openingParenthese  = regexp.MustCompile(`[^_|\(| ]\(`)
 	equalWithSpaces    = regexp.MustCompile(`[^ |!|<|>|=]=|=[^=| |>]`)
+	moreThan120Chars   = regexp.MustCompile(`.{121}`)
+	glibNotNecessary   = regexp.MustCompile(`GLib.print`)
 
 	warningMessages = map[int]string{
 		1: "First brace isn't on the end of the first line",
@@ -27,6 +29,8 @@ var (
 		3: "Not indented using 4 spaces",
 		4: "Opening parenthese not preceeded by a whitespace",
 		5: "Equals sign not surrounded by whitespaces",
+		6: "The length of the line is superior to 120 characters",
+		7: "Referring to GLib is not necessary",
 	}
 )
 
@@ -75,6 +79,14 @@ func validateLine(line string) []int {
 
 	if equalWithSpaces.MatchString(line) {
 		warnings = append(warnings, 5)
+	}
+
+	if moreThan120Chars.MatchString(line) {
+		warnings = append(warnings, 6)
+	}
+
+	if glibNotNecessary.MatchString(line) {
+		warnings = append(warnings, 7)
 	}
 
 	return warnings

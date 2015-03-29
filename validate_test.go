@@ -15,7 +15,7 @@ func testValidateLine(t *testing.T, tests []string, code int, hasToContainCode b
 	for _, test := range tests {
 		warnings := validateLine(test)
 		if containsCode(warnings, code) != hasToContainCode {
-			t.Errorf("Single brace failed on: \"%s\" warnings%v\n", test, warnings)
+			t.Errorf("%s (expected %t): \"%s\" (warnings: %v)\n", warningMessages[code], hasToContainCode, test, warnings)
 		}
 	}
 }
@@ -57,5 +57,20 @@ func TestEqualWithSpaces(t *testing.T) {
 	code := 5
 	negativeTests := []string{"b=", "=3", "a=3", " =(3 + 4)"}
 	positiveTests := []string{"b = 2", "a!= 2", " =>", "<= ", ">= ", " == "}
+	runValidateLineTests(t, negativeTests, positiveTests, code)
+}
+
+func TestLineLengthGreaterThan120(t *testing.T) {
+	code := 6
+	string120 := "kkzvt84AlytfJRgugEo2mJs0K6utlfe5zrwDCC8lfXPt3GMFLAfDhxFN5nJX9tzkpyQMQ8lHQTuvC0ZEjmnrEmQ5rOcAHVXLGxK5Y28xmURvWn1EMjytRFcm"
+	negativeTests := []string{string120 + "a", string120 + "abcdef", string120 + string120}
+	positiveTests := []string{string120, "hello", string120[:119], ""}
+	runValidateLineTests(t, negativeTests, positiveTests, code)
+}
+
+func TestGLibNotNecessary(t *testing.T) {
+	code := 7
+	negativeTests := []string{"    GLib.print (\"Hi\");", "GLib.println()"}
+	positiveTests := []string{"    print (\"Hi\");", "println()"}
 	runValidateLineTests(t, negativeTests, positiveTests, code)
 }
